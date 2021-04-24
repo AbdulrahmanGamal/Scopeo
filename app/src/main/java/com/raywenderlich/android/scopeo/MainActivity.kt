@@ -87,7 +87,17 @@ class MainActivity : AppCompatActivity() {
     })
 
     viewModel.permissionNeededForDelete.observe(this, Observer { intentSender ->
-      // TODO: Use the IntentSender to prompt the user for deleting the image
+      intentSender?.let {
+        startIntentSenderForResult(
+                intentSender,
+                DELETE_PERMISSION_REQUEST,
+                null,
+                0,
+                0,
+                0,
+                null
+        )
+      }
     })
 
     openAlbumButton.setOnClickListener { openMediaStore() }
@@ -174,7 +184,20 @@ class MainActivity : AppCompatActivity() {
 
 
   private fun requestPermission() {
-    // TODO: Request the required permissions
+    if (!haveStoragePermission()) {
+      val permissions = arrayOf(
+              Manifest.permission.READ_EXTERNAL_STORAGE,
+              Manifest.permission.WRITE_EXTERNAL_STORAGE
+      )
+      ActivityCompat.requestPermissions(
+              //1
+              this,
+              //2
+              permissions,
+              //3
+              READ_EXTERNAL_STORAGE_REQUEST
+      )
+    }
   }
 
   private fun deleteImage(image: Image) {
